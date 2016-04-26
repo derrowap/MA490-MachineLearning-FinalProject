@@ -1,6 +1,22 @@
 # import numpy as np
 import random
 
+def main():
+	Game = TicTacToe()
+	while True:
+		print("Player%i, take your move." % Game.turn)
+		row = int(raw_input("Enter row of move..."))
+		col = int(raw_input("Enter col of move..."))
+		Game.move(Game.turn, row, col)
+		Game.printBoard()
+		if Game.win:
+			restart = int(raw_input("Enter 1 to restart the game, 0 to end game..."))
+			if restart == 1:
+				Game.restartGame()
+			else:
+				print("Closing Tic-Tac-Toe Game...")
+				return
+
 class TicTacToe():
 
 	def __init__(self):
@@ -77,16 +93,4 @@ class TicTacToe():
 		print('   |   |')
 
 if __name__ == "__main__":
-	Game = TicTacToe()
-	while True:
-		print("Player%i, take your move." % Game.turn)
-		row = int(raw_input("Enter row of move..."))
-		col = int(raw_input("Enter col of move..."))
-		Game.move(Game.turn, row, col)
-		Game.printBoard()
-		if Game.win:
-			restart = int(raw_input("Enter 1 to restart the game"))
-			if restart == 1:
-				Game.restartGame()
-			else:
-				return
+	main()				
