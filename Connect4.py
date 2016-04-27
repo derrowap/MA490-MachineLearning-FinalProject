@@ -48,7 +48,6 @@ class Connect4():
         """
         Moves in the given column if it is a valid move
         """
-        print("column: %d" % column)
         if column < 0 or column > 6 or self.board[5][column] != 0:
             print("Can't move here, please enter a valid position")
             return
