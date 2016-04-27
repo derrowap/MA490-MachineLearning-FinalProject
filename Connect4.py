@@ -1,5 +1,27 @@
 import random
 
+def main():
+    """
+    Begins a game of connect 4. After a winner is declared, the players 
+    can restart the game or exit
+    """
+    Game = Connect4()
+    while True:
+        print("Player%i, take your move." % Game.turn)
+        col = int(input("Enter col of move... "))
+        Game.move(Game.turn, (col-1))
+        Game.printBoard()
+        if Game.win:
+            restart = int(input("Enter 1 to restart the game... "))
+            if restart == 1:
+                Game.restartGame()
+            else:
+                return
+
+"""
+A Connect4 game. Two players take turns specifying the column to make
+their next move in.
+"""
 class Connect4():
 
     def __init__(self):
@@ -17,10 +39,17 @@ class Connect4():
         self.win = 0
 
     def changeTurn(self):
+        """
+        Flips whose turn it is in the game
+        """
         self.turn = 1 if self.turn == 2 else 2
 
     def move(self, player, column):
-        if (0 <= column <= 6 and self.board[5][column] != 0):
+        """
+        Moves in the given column if it is a valid move
+        """
+        print("column: %d" % column)
+        if column < 0 or column > 6 or self.board[5][column] != 0:
             print("Can't move here, please enter a valid position")
             return
         else: # valid move, place piece at first available row in column
@@ -31,8 +60,10 @@ class Connect4():
                     self.changeTurn()
                     break
 
-    # Given a player and the row/column they put their piece, check if that move made them win
     def checkForWin(self, player, row, column):
+        """
+        Given the row and column that a player moved in, checks all directions for win condition
+        """
         if self.checkVertical(player, row, column) or self.checkHorizontal(player, row, column) or self.checkDiagonals(player, row, column):
             print("----------------------------")
             print("Yay! Player %i is the winner!" % player)
@@ -40,6 +71,9 @@ class Connect4():
             self.win = player
 
     def checkVertical(self, player, row, column):
+        """
+        Checks to see if win vertical
+        """
         count = 0
         for x in range(-3, 4):
             if 0 <= (row + x) <= 5 and self.board[row+x][column] == player:
@@ -51,6 +85,9 @@ class Connect4():
         return False
 
     def checkHorizontal(self, player, row, column):
+        """
+        Checks to see if win horizontal
+        """
         count = 0
         for x in range(-3, 4):
             if (0 <= (column + x) <= 6 and self.board[row][column+x] == player):
@@ -62,6 +99,9 @@ class Connect4():
         return False
 
     def checkDiagonals(self, player, row, column):
+        """
+        Checks to see if win diagonal
+        """
         count = 0
         for x in range(-3, 4):
             if 0 <= (column + x) <= 6 and 0 <= (row - x) <= 5 and self.board[row-x][column+x] == player:
@@ -82,14 +122,23 @@ class Connect4():
         return False
 
     def whoGoesFirst(self):
+        """
+        Randomly selects one player to go first
+        """
         return random.randint(1, 2)
 
     def restartGame(self):
+        """
+        Restarts the game with initial setup
+        """
         self.board = [[0 for x in range(7)] for y in range(6)]
         self.turn = self.whoGoesFirst()
         self.win = 0
 
     def printBoard(self):
+        """
+        Prints a representation of the current board
+        """
         key = [" ", "X", "O"]
         print(" ")
         for row in range(5, -1, -1):
@@ -97,15 +146,4 @@ class Connect4():
         print("1 2 3 4 5 6 7")
 
 if __name__ == "__main__":
-    Game = Connect4()
-    while True:
-        print("Player%i, take your move." % Game.turn)
-        col = int(input("Enter col of move..."))
-        Game.move(Game.turn, (col-1))
-        Game.printBoard()
-        if Game.win:
-            restart = int(input("Enter 1 to restart the game..."))
-            if restart == 1:
-                Game.restartGame()
-            else:
-                break
+    main()
