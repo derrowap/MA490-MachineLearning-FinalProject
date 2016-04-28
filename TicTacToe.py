@@ -8,12 +8,12 @@ def main():
 	Game = TicTacToe()
 	while True:
 		print("Player%d, take your move." % Game.turn)
-		row = int(raw_input("Enter row of move..."))
-		col = int(raw_input("Enter col of move..."))
+		row = int(input("Enter row of move... "))
+		col = int(input("Enter col of move... "))
 		Game.move(Game.turn, row, col)
 		Game.printBoard()
 		if Game.win:
-			restart = int(raw_input("Enter 1 to restart the game, 0 to end game..."))
+			restart = int(input("Enter 1 to restart the game, 0 to end game... "))
 			if restart == 1:
 				Game.restartGame()
 			else:
