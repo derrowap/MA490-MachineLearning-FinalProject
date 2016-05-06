@@ -1,5 +1,149 @@
 import math
 
+def evenParity(n):
+	"""Determines if n is an even parity.
+
+	Calculates the number of 1 bits in the binary representation of the given 
+	integer, n. An even parity is true if the number of 1 bits in the
+	representation is even.
+
+	Args:
+		n: integer to check for even parity.
+
+	Returns:
+		A 0 if n is an even parity, else a 1.
+	"""
+	binary =  "{0:b}".format(n)
+	return binary.count('1') % 2
+
+def oddParity(n):
+	"""Determines if n is an odd parity.
+
+	Calculates the number of 1 bits in the binary representation of the given 
+	integer, n. If the number is odd,  outputs a 0. If the number is even, 
+	outputs a 1.
+
+	Args:
+		n: integer to check for odd parity.
+
+	Returns:
+		A 0 if n is an odd parity, else a 1.
+	"""
+	binary = "{0:b}".format(n)
+	return (binary.count('1') + 1) % 2
+
+def adder(n):
+	"""Adds 42 to a given number.
+
+	Args:
+		n: integer to add to.
+
+	Returns:
+		The value of n added by 42.
+	"""
+	return n + 42
+
+def multiply(n, m):
+	"""Returns n multiplied by m.
+
+	Args:
+		n: integer to be multiplied by
+		m: integer to be multiplied by
+
+	Returns:
+		The product of n and m.
+	"""
+	return n * m
+
+def multiplyAndAdd(n, m):
+	"""Adds 5 to n, adds 7 to m, and returns the product of the two.
+
+	f(n, m) = (n + 5) * (m + 7)
+
+	Args:
+		n: integer as an input to the function
+		m: integer as an input to the function
+
+	Returns:
+		The output of the function given n and m.
+	"""
+	return (n + 5) * (m + 7)
+
+def makePalindrome(s):
+	"""Makes a palindrome from a given string.
+
+	Reverses and appends s to the end of s. This guarantees the return 
+	statement is a palindrome.
+
+	Args:
+		s: a string
+
+	Returns:
+		A palindrome formed by appending s reversed to the end of s.
+	"""
+	return s + s[::-1]
+
+def isPalindrome(s):
+	"""Validates whether the input is a palindrome.
+
+	Args:
+		s: a string
+
+	Returns:
+		True if the input is a valid palindrome, else False.
+	"""
+	return all(s[i] == s[-i - 1] for i in range(len(s) >> 1))
+
+def sine(x):
+	"""Returns the sin of x radians.
+
+	Args:
+		x: number of radians
+
+	Returns:
+		The sine of x radians.
+	"""
+	return math.sin(x)
+
+def fib(n):
+	"""Approximates the nth Fibonacci number.
+
+	Since this uses Binet's formula, it is only exactly accurate from 1 to 70.
+	Past n values of 70, it is only an approximation.
+
+	Binet's formula is defined as:
+	F(n) = ((Phi ^ n) - ((- Phi) ^ -n)) / sqrt(5)
+			 = (((1 + sqrt(5)) / 2) ^ n) - ((1 - sqrt(5)) / 2) ^ n)) / sqrt(5))
+
+	Args:
+		n: integer for the nth number in the Fibonacci sequence
+
+	Returns:
+		The output of Binet's forumula with input n, an approximation of the nth
+		number in the Fibonacci sequence.
+	"""
+	return round(((((1 + math.sqrt(5)) / 2) ** n) - (((1 - math.sqrt(5)) / 2) ** n)) / math.sqrt(5))
+
+def testFibAccuracy():
+	"""Calculates when the function fib(n) becomes inaccurate.
+
+	Exactly up to 70.
+	71 - 72 are off by 1.
+	73 and on are off by more than 1.
+
+	Returns:
+		fn: the last Fibonacci number found by using the recursive function.
+		count: the number of Fibonacci numbers calculated.
+		fib(count): an approximation for the last Fibonacci number.
+	"""
+	fn = f1 = f2 = 1
+	count = 2
+	while (fn == fib(count)) | (fn == fib(count) + 1) | (fn == fib(count) - 1):
+		fn = f1 + f2
+		f2, f1 = f1, fn
+		count+=1
+	return fn, count, fib(count)
+
 def main():
 	print("evenParity(2) ->", evenParity(2))
 	print("evenParity(3) ->", evenParity(3))
@@ -29,77 +173,6 @@ def main():
 	fn, count, approx = testFibAccuracy()
 	print("Actual", count, "number in fib sequence =", fn, 
 		"Approximation =", approx)
-
-def evenParity(n):
-	"""Determines if n is an even parity.
-
-	Calculates the number of 1 bits in the binary representation of the given 
-	integer, n. If the number is even, outputs a 0. If the number is odd, 
-	outputs a 1.
-	"""
-	binary =  "{0:b}".format(n)
-	return binary.count('1') % 2
-
-def oddParity(n):
-	"""Determines if n is an odd parity.
-
-	Calculates the number of 1 bits in the binary representation of the given 
-	integer, n. If the number is odd,  outputs a 0. If the number is even, 
-	outputs a 1.
-	"""
-	binary = "{0:b}".format(n)
-	return (binary.count('1') + 1) % 2
-
-def adder(n):
-	"""Returns n added by 42."""
-	return n + 42
-
-def multiply(n, m):
-	"""Returns n multiplied by m."""
-	return n * m
-
-def multiplyAndAdd(n, m):
-	"""Adds 5 to n, adds 7 to m, and returns the product of the two."""
-	return (n + 5) * (m + 7)
-
-def makePalindrome(s):
-	"""Returns a palindrome of s.
-
-	Reverses and appends s to the end of s. This guarantees the return 
-	statement is a palindrome.
-	"""
-	return s + s[::-1]
-
-def isPalindrome(s):
-	"""Returns true if s is a valid palindrome, else returns false."""
-	return all(s[i] == s[-i - 1] for i in range(len(s) >> 1))
-
-def sine(x):
-	"""Returns the sin of x radians."""
-	return math.sin(x)
-
-def fib(n):
-	"""Returns the nth fibonacci number.
-
-	Since this uses Binet's formula, it is only exactly accurate from 1 to 70.
-	Past n values of 70, it is only an approximation.
-	"""
-	return round(((((1 + math.sqrt(5)) / 2) ** n) - (((1 - math.sqrt(5)) / 2) ** n)) / math.sqrt(5))
-
-def testFibAccuracy():
-	"""Calculates when the function fib(n) becomes inaccurate.
-
-	Exactly up to 70.
-	71 - 72 are off by 1.
-	73 and on are off by more than 1.
-	"""
-	fn = f1 = f2 = 1
-	count = 2
-	while (fn == fib(count)) | (fn == fib(count) + 1) | (fn == fib(count) - 1):
-		fn = f1 + f2
-		f2, f1 = f1, fn
-		count+=1
-	return fn, count, fib(count)
 
 if __name__ == "__main__":
     main()
