@@ -1,4 +1,5 @@
 import math
+import numpy as np
 
 def evenParity(n):
 	"""Determines if n is an even parity.
@@ -143,6 +144,17 @@ def testFibAccuracy():
 		f2, f1 = f1, fn
 		count+=1
 	return fn, count, fib(count)
+
+def determinant(m):
+	"""Returns the determinant of a matrix
+
+	Args:
+		m: array of arrays that represents a matrix
+
+	Returns:
+		determinant of a matrix
+	"""
+	return int(round(np.linalg.det(m)))
 
 def main():
 	print("evenParity(2) ->", evenParity(2))
