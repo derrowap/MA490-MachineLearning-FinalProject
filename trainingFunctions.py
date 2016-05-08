@@ -146,13 +146,13 @@ def testFibAccuracy():
 	return fn, count, fib(count)
 
 def determinant(m):
-	"""Returns the determinant of a matrix
+	"""Calculates the determinant of a matrix.
 
 	Args:
-		m: array of arrays that represents a matrix
+		m: array of arrays that represents a matrix.
 
 	Returns:
-		determinant of a matrix
+		The determinant of a matrix.
 	"""
 	return int(round(np.linalg.det(m)))
 
