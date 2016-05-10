@@ -30,36 +30,6 @@ sess = tf.InteractiveSession()
 
 # This builds a feed-forward model with a single hidden layer.
 
-def weight_variable(shape):
-	"""Defines a Variable with specified shape as weights.
-
-	Initializes with a little noise to prevent symmetry breaking and 0
-	gradients.
-
-	Args:
-		shape: Shape of the weight Variable to define.
-
-	Returns:
-		Variable of specified shape containing weights initialized with noise.
-	"""
-	initial = tf.truncated_normal(shape, stddev=0.1)
-	return tf.Variable(initial)
-
-def bias_variable(shape):
-	"""Defines a Variabel with specified shape as biases.
-
-	All bias variables are initialized to 0.1.
-
-	Args:
-		shape: Shape of the bias Variable to define.
-
-	Returns:
-		Variable of specified shape containing biases initialized to 0.1.
-	"""
-	initial = tf.constant(0.1, shape=shape)
-	return tf.Variable(initial)
-
-
 # Placeholders to create nodes for input images and target output classes.
 #
 # x: 2D tensor of floating point numbers.
@@ -78,26 +48,23 @@ y_ = tf.placeholder(tf.float32, shape=[None, 1])
 # W: 2x1 matrix of floating points numbers.
 # 	Each value represents a connection weight from one input to the output.
 # b: Bias variable for the output.
-W_hidden = tf.Variable(tf.zeros([2, 100]))
-b_hidden = tf.Variable(tf.zeros([100]))
+W_hidden = tf.Variable(tf.truncated_normal([2, 100], stddev=0.1))
+b_hidden = tf.Variable(tf.truncated_normal([100], stddev=0.1))
 
 # Applies ReLU function to get activation for each hidden node.
 h_out = tf.nn.relu(tf.matmul(x, W_hidden) + b_hidden)
 
-# Sums activations of hidden node to get final output.
-y = tf.reduce_sum(h_out)
+# Weights and biases from hidden layer to the output layer.
+W_out = tf.Variable(tf.truncated_normal([100, 1], stddev=0.1))
+b_out = tf.Variable(tf.truncated_normal([1], stddev=0.1))
 
+# Sums activations of output nodes to get final answer.
+y = tf.reduce_sum(tf.nn.relu(tf.matmul(h_out, W_out) + b_out))
 
-# Defines cross entropy cost function to minimize.
-#
-# tf.reduce_sum sums across all classes.
-# tf.reduce_mean takes the average over these sums.
-# cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y),
-#	reduction_indices=[1]))
-
+# MSE is our cost function to reduce when training.
 mse = tf.reduce_mean(tf.square(y - y_))
 
-
+# Adam optimizer that trains the model.
 train_step = tf.train.AdamOptimizer(1e-4).minimize(mse)
 
 # Initializes all variables.
@@ -107,12 +74,15 @@ train_step = tf.train.AdamOptimizer(1e-4).minimize(mse)
 sess.run(tf.initialize_all_variables())
 
 for i in range(10000):
-	batchSize = 10
+	batchSize = 50
 	batchInput = [None] * batchSize
 	batchTarget = [None] * batchSize
 	for j in range(batchSize):
-		batchInput[j] = [np.random.randint(1, 10), np.random.randint(1, 10)]
-		batchTarget[j] = [multiply(batchInput[j][0], batchInput[j][1])]
+		a = np.random.randint(1, 10)
+		b = np.random.randint(1, 10)
+		batchInput[j] = [a, b]
+		batchTarget[j] = [multiply(a, b)]
+	train_step.run(feed_dict={x: batchInput, y_: batchTarget})
 
 # Calculates accuracy by using a new set of data.
 print("MSE for multiply function, summing over ReLU:")
