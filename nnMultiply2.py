@@ -48,24 +48,27 @@ y_ = tf.placeholder(tf.float32, shape=[None, 1])
 # W: 2x1 matrix of floating points numbers.
 # 	Each value represents a connection weight from one input to the output.
 # b: Bias variable for the output.
-W_hidden = tf.Variable(tf.truncated_normal([2, 100], stddev=0.1))
-b_hidden = tf.Variable(tf.truncated_normal([100], stddev=0.1))
+W_hidden = tf.Variable(tf.truncated_normal([2, 10], stddev=0.1))
+b_hidden = tf.Variable(tf.truncated_normal([10], stddev=0.1))
 
 # Applies ReLU function to get activation for each hidden node.
 h_out = tf.nn.relu(tf.matmul(x, W_hidden) + b_hidden)
 
+keep_prob = tf.placeholder(tf.float32)
+h_drop = tf.nn.dropout(h_out, keep_prob)
+
 # Weights and biases from hidden layer to the output layer.
-W_out = tf.Variable(tf.truncated_normal([100, 1], stddev=0.1))
+W_out = tf.Variable(tf.truncated_normal([10, 1], stddev=0.1))
 b_out = tf.Variable(tf.truncated_normal([1], stddev=0.1))
 
 # Sums activations of output nodes to get final answer.
-y = tf.reduce_sum(tf.nn.relu(tf.matmul(h_out, W_out) + b_out))
+y = tf.reduce_sum(tf.nn.relu(tf.matmul(h_drop, W_out) + b_out))
 
 # MSE is our cost function to reduce when training.
 mse = tf.reduce_mean(tf.square(y - y_))
 
 # Adam optimizer that trains the model.
-train_step = tf.train.AdamOptimizer(1e-4).minimize(mse)
+train_step = tf.train.AdamOptimizer(0.1).minimize(mse)
 
 # Initializes all variables.
 #
@@ -74,7 +77,7 @@ train_step = tf.train.AdamOptimizer(1e-4).minimize(mse)
 sess.run(tf.initialize_all_variables())
 
 for i in range(10000):
-	batchSize = 50
+	batchSize = 100
 	batchInput = [None] * batchSize
 	batchTarget = [None] * batchSize
 	for j in range(batchSize):
@@ -82,10 +85,13 @@ for i in range(10000):
 		b = np.random.randint(1, 10)
 		batchInput[j] = [a, b]
 		batchTarget[j] = [multiply(a, b)]
-	train_step.run(feed_dict={x: batchInput, y_: batchTarget})
+	if i % 1000 == 0:
+		print("Iteration %d, MSE = %f" % (i, mse.eval(feed_dict={
+			x: batchInput, y_: batchTarget, keep_prob: 1.0})))
+	train_step.run(feed_dict={x: batchInput, y_: batchTarget, keep_prob: 0.2})
 
 # Calculates accuracy by using a new set of data.
 print("MSE for multiply function, summing over ReLU:")
-print(mse.eval(feed_dict={x: batchInput, y_: batchTarget}))
+print(mse.eval(feed_dict={x: batchInput, y_: batchTarget, keep_prob: 1.0}))
 
 sess.close()
