@@ -44,6 +44,17 @@ def adder(n):
 	"""
 	return n + 42
 
+def addThem(n, m):
+	"""Calculates the sum of n and m.
+
+	Args:
+		n: an integer to add.
+		m: an integer to add.
+	Returns:
+		The sum of n and m.
+	"""
+	return n + m
+
 def multiply(n, m):
 	"""Returns n multiplied by m.
 
