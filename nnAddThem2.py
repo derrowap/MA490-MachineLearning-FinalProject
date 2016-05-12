@@ -19,9 +19,19 @@
 import numpy as np
 import pandas as pd
 from tensorflow.contrib.learn import TensorFlowDNNRegressor
-from trainingFunctions import addThem
 from sklearn.metrics import accuracy_score
 from sklearn.cross_validation import train_test_split
+
+def addThem(n, m):
+	"""Calculates the sum of n and m.
+
+	Args:
+		n: an integer to add.
+		m: an integer to add.
+	Returns:
+		The sum of n and m.
+	"""
+	return n + m
 
 size = 2000000
 input_ = np.zeros((size, 2))
