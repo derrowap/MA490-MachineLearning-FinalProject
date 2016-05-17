@@ -79,14 +79,21 @@ y_ = tf.placeholder(tf.float32, shape=[None, 1])
 # W: 2x1 matrix of floating points numbers.
 #   Each value represents a connection weight from one input to the output.
 # b: Bias variable for the output.
-W_hidden = tf.Variable(tf.zeros([1, 100]))
-b_hidden = tf.Variable(tf.zeros([100]))
+W_hidden = tf.Variable(tf.truncated_normal([1, 2], stddev=0.1))
+b_hidden = tf.Variable(tf.truncated_normal([1], stddev=0.1))
 
 # Applies ReLU function to get activation for each hidden node.
 h_out = tf.nn.relu(tf.matmul(x, W_hidden) + b_hidden)
 
+keep_prob = tf.placeholder(tf.float32)
+h_drop = tf.nn.dropout(h_out, keep_prob)
+
+# Weights and biases from hidden layer to the output layer.
+W_out = tf.Variable(tf.truncated_normal([2, 4], stddev=0.1))
+b_out = tf.Variable(tf.truncated_normal([1], stddev=0.1))
+
 # Sums activations of hidden node to get final output.
-y = tf.reduce_sum(h_out)
+y = tf.reduce_sum(tf.nn.relu(tf.matmul(h_drop, W_out) + b_out))
 
 
 # Defines cross entropy cost function to minimize.
@@ -107,28 +114,36 @@ train_step = tf.train.AdamOptimizer(1e-4).minimize(mse)
 # specified, and assigns them to each Variable object.
 sess.run(tf.initialize_all_variables())
 
+# generate data
+batchSize = 1000
+batchInput = np.zeros((batchSize, 1))
+batchTarget = np.zeros((batchSize, 1))
+k = 0
 
-for i in range(10):
-    batchSize = 100
-    batchInput = [None] * batchSize
-    batchTarget = [None] * batchSize
-    for j in range(batchSize):
-        batchInput[j] = [np.random.randint(1, 100)]
-        batchTarget[j] = [adder(batchInput[j][0])]
-    train_step.run(feed_dict={x: batchInput, y_: batchTarget})
 
-batchTestSize = 1000
-batchTest = [None] * batchTestSize
-batchTestTarget = [None] * batchTestSize
+for i in range(2000):
+    for j in range(37):
+        batchInput[j] = [k]
+        batchTarget[j] = [adder(k)]
+    k+=1
+    if(k == 100):
+        k = 0
+        print("Iteration %d, MSE = %f" % (i, mse.eval(feed_dict={
+            x: batchInput, y_: batchTarget, keep_prob: 1.0})))
+        print(y.eval(feed_dict={x: [[1]], keep_prob:1.0}))
+    train_step.run(feed_dict={x: batchInput, y_: batchTarget, keep_prob: 0.5})
+
+
+batchTestSize = 100
+batchTest = np.zeros((batchTestSize, 1))
+batchTestTarget = np.zeros((batchTestSize, 1))
 for j in range(batchTestSize):
-        batchTest[j] = [np.random.randint(1, 100)]
-        batchTestTarget[j] = [adder(batchTest[j][0])]
+        batchTest[j] = [j]
+        batchTestTarget[j] = [adder(j)]
 
-print(str(batchTest))
 # Calculates accuracy by using a new set of data.
-print("MSE for multiply function, summing over ReLU:")
-print(mse.eval(feed_dict={x: batchTest, y_: batchTestTarget}))
-
-print(mse.eval(feed_dict={x: [[1]]}))
-
+print("MSE for adder function, summing over ReLU:")
+print(mse.eval(feed_dict={x: batchTest, y_: batchTestTarget, keep_prob:1.0}))
+print(y.eval(feed_dict={x: batchTest, y_:batchTestTarget, keep_prob:1.0}))
+    
 sess.close()
