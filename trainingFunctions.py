@@ -165,7 +165,7 @@ def determinant(m):
 	Returns:
 		The determinant of a matrix.
 	"""
-	return int(round(np.linalg.det(m)))
+	return np.linalg.det(m)
 
 def main():
 	print("evenParity(2) ->", evenParity(2))
