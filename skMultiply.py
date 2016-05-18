@@ -1,56 +1,33 @@
 # Author: Austin Derrow-Pinion
-# Purpose: Train a Neural Network to mimic the funcitonality of adding
+# Purpose: Train a Neural Network to mimic the funcitonality of multiplying
 #	two numbers together.
 #
-# Results:
-# Numbers between 1 and 100 gives perfect accuracy.
-#
-# Numbers between 1 and 500 gives 0.42 error.
-#
-# Numbers between 1 and 1000 gives 0.87 error.
-#
-# With numbers between 1 and 500, the output is off by 1 whenever the sum is
-# greater than 620.
-# 
-# The best architecture for the neural network is a single hidden layer of 2
-# nodes.
 # ============================================================================
 
 import numpy as np
-import pandas as pd
 from tensorflow.contrib.learn import TensorFlowDNNRegressor
 from trainingFunctions import multiply
 from sklearn.metrics import accuracy_score
-from sklearn.cross_validation import train_test_split
 
-size = 2000000
-input_ = np.zeros((size, 2))
-target = np.zeros(size)
-for i in range(size):
-	a = float(np.random.randint(1, 10))
-	b = float(np.random.randint(1, 10))
-	input_[i] = [a, b]
-	target[i] = multiply(a, b)
+top = 20
+x = np.zeros((top ** 2, 2))
+y = np.zeros(top ** 2)
+count = 0
+for i in range(1, top+1):
+	for j in range(1, top+1):
+		x[count] = [i, j]
+		y[count] = multiply(i, j)
+		count += 1
 
-x_train, x_test, y_train, y_test = train_test_split(input_, target,
-	test_size=0.2, random_state=0)
+numSteps = 500000
+NN = TensorFlowDNNRegressor(hidden_units=[400], steps=numSteps)
 
-NN = TensorFlowDNNRegressor(hidden_units=[2], steps=10000,
-	learning_rate=0.1)
-
-NN.fit(x_train, y_train)
-pred = NN.predict(x_train)
+NN.fit(x, y)
+pred = NN.predict(x)
 pred = np.reshape(pred, -1)
 pred = np.rint(pred)
-error_train = 1 - accuracy_score(y_train, pred)
-
-pred = NN.predict(x_test)
-pred = np.reshape(pred, -1)
-pred = np.rint(pred)
-error_test = 1 - accuracy_score(y_test, pred)
-
-print('\nTraining error = %0.3f    testing error = %0.3f'
-	% (error_train, error_test))
+error = 1 - accuracy_score(y, pred)
+print('Steps %d, error %f' % (numSteps, error))
 
 print("\nEnter exit to leave loop.")
 while True:
