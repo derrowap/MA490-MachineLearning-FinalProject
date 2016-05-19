@@ -6,21 +6,17 @@
 
 import numpy as np
 from tensorflow.contrib.learn import TensorFlowDNNRegressor
-from trainingFunctions import multiply
+from trainingFunctions import fib
 from sklearn.metrics import accuracy_score
 
-top = 20
-x = np.zeros((top ** 2, 2))
-y = np.zeros(top ** 2)
-count = 0
-for i in range(1, top+1):
-	for j in range(1, top+1):
-		x[count] = [i, j]
-		y[count] = multiply(i, j)
-		count += 1
+x = np.zeros(70)
+y = np.zeros(70)
+for i in range(70):
+	x[i] = i + 1
+	y[i] = fib(i + 1)
 
-numSteps = 500000
-NN = TensorFlowDNNRegressor(hidden_units=[400], steps=numSteps)
+numSteps = 10000
+NN = TensorFlowDNNRegressor(hidden_units=[100, 100, 100], steps=numSteps)
 
 NN.fit(x, y)
 pred = NN.predict(x)
@@ -36,11 +32,6 @@ while True:
 		first = int(first)
 	except:
 		break
-	second = input("Number 2... ")
-	try:
-		second = int(second)
-	except:
-		break
-	result = NN.predict(np.array([[first, second]]))
-	print("I think %d * %d = %d"
-		% (first, second, int(np.rint(result[0][0]))))
+	result = NN.predict(np.array([first]))
+	print("I think fib_%d = %d"
+		% (first, int(np.rint(result[0][0]))))

@@ -117,6 +117,17 @@ def sine(x):
 	"""
 	return math.sin(x)
 
+def expansionTerms(x):
+	output = np.zeros(10)
+	n = 1
+	for i in range(10):
+		if i % 2 == 0:
+			output[i] = (x ** n) / math.factorial(n)
+		else:
+			output[i] = -(x ** n) / math.factorial(n)
+		n += 2
+	return output
+
 def fib(n):
 	"""Approximates the nth Fibonacci number.
 
@@ -134,7 +145,9 @@ def fib(n):
 		The output of Binet's forumula with input n, an approximation of the nth
 		number in the Fibonacci sequence.
 	"""
-	return round(((((1 + math.sqrt(5)) / 2) ** n) - (((1 - math.sqrt(5)) / 2) ** n)) / math.sqrt(5))
+	return round(((((1 + math.sqrt(5)) / 2) ** n)
+				- (((1 - math.sqrt(5)) / 2) ** n))
+				/ math.sqrt(5))
 
 def testFibAccuracy():
 	"""Calculates when the function fib(n) becomes inaccurate.
