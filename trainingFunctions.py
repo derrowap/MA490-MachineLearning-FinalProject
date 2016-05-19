@@ -117,7 +117,7 @@ def sine(x):
 	"""
 	return math.sin(x)
 
-def sineExpansionTerms(x):
+def expansionTerms(x):
 	output = np.zeros(10)
 	n = 1
 	for i in range(10):
