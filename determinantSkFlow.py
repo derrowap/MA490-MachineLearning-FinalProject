@@ -14,12 +14,12 @@ from tensorflow.contrib import skflow
 
 from trainingFunctions import determinant
 
-def worker(steps, out_q, batchInput, batchTarget):
+def worker(units, out_q, batchInput, batchTarget):
     """worker function"""
     X_train, X_test, y_train, y_test = cross_validation.train_test_split(batchInput, batchTarget,
     test_size=0.1, random_state=42)
 
-    regressor = skflow.TensorFlowDNNRegressor(hidden_units=steps, steps=100000, learning_rate=0.1)
+    regressor = skflow.TensorFlowDNNRegressor(hidden_units=units, steps=100000, learning_rate=0.1)
 
     regressor.fit(X_train, y_train)
 
@@ -27,7 +27,7 @@ def worker(steps, out_q, batchInput, batchTarget):
 
     out_q.put(score)
 
-    print('%d done' % steps[0]);
+    print('%d done' % units[0]);
     return;
 
 examples = 20
@@ -105,23 +105,25 @@ for h in range(examples):
 
 if __name__ == '__main__':
     out_q = multiprocessing.Queue();
-    n_procs = 30
+    n_procs = 100
     procs = []
     for i in range(n_procs):
         p = multiprocessing.Process(
             target=worker,
-            args=([(i+1) *100], out_q, batchInput, batchTarget))
+            args=([(i+1)], out_q, batchInput, batchTarget))
         procs.append(p)
         p.start()
 
     # Collect all results into a single array
     final_out = np.zeros(n_procs)
+    final_i = np.zeros(n_procs)
     for i in range(n_procs):
         final_out[i] = out_q.get()
+        final_i[i] = i+1
 
     # Wait for all worker processes to finish
     for p in procs:
         p.join()
 
-    np.savetxt('/home/sanderkd/Data/1_layer_by_100.csv', final_out)
+    np.savetxt('/home/sanderkd/Data/determinant_1_layer_by_1.csv', (final_i, final_out), delimiter=', ')
     print('finished')
