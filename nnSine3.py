@@ -10,7 +10,7 @@ from sklearn.metrics import mean_squared_error
 from tensorflow.contrib import skflow
 
 #Inputs and targets
-range_ = np.linspace(-np.pi, np.pi, num=10000, dtype = 'float32')
+range_ = np.linspace(-3 * np.pi, 3 * np.pi, num=10000, dtype = 'float32')
 input_ = np.zeros((10000,9), dtype='float32')
 target = np.zeros(10000, dtype='float32')
 for i in range(10000):
@@ -20,7 +20,7 @@ for i in range(10000):
 #x_train, x_test, y_train, y_test = train_test_split(input_, target,
 #	test_size=0.2, random_state=0)
 #Neural Network
-NN = TensorFlowDNNRegressor(hidden_units=[9], steps=10000, learning_rate=0.5)
+NN = TensorFlowDNNRegressor(hidden_units=[9], steps=100000)
 #Fit the training data
 NN.fit(input_, target)
 pred = NN.predict(input_)
@@ -30,7 +30,7 @@ mse_train = mean_squared_error(target, pred)
 #pred = NN.predict(x_test)
 #pred = np.reshape(pred, -1)
 #mse_test = mean_squared_error(y_test, pred)
-range_2 = np.linspace(-np.pi, np.pi, num = 100, dtype = 'float32')
+range_2 = np.linspace(-5*np.pi, 5*np.pi, num = 100, dtype = 'float32')
 input_2 = np.zeros((100,9), dtype='float32')
 for i in range(100):
 	input_2[i] = expansionTerms(range_2[i])
