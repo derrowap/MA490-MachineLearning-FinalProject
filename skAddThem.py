@@ -9,6 +9,7 @@ from tensorflow.contrib.learn import TensorFlowDNNRegressor
 from trainingFunctions import addThem
 from sklearn.metrics import accuracy_score
 from sklearn.cross_validation import train_test_split
+from sklearn.preprocessing import normalize
 
 size = 1000
 x = np.zeros((size ** 2, 2))
@@ -20,12 +21,14 @@ for i in range(size):
 		y[count] = addThem(i, j)
 		count += 1
 
+x = normalize(x, norm='max')
+
 x_train, x_test, y_train, y_test = train_test_split(
 	x, y, test_size=0.1, random_state=0)
 
 
 numSteps = 100000
-NN = TensorFlowDNNRegressor(hidden_units=[2], steps=numSteps)
+NN = TensorFlowDNNRegressor(hidden_units=[10], steps=numSteps)
 
 NN.fit(x_train, y_train)
 pred = NN.predict(x_test)
