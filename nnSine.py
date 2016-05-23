@@ -30,20 +30,20 @@ target = thread1.y
 x_train, x_test, y_train, y_test = train_test_split(input_, target,
 	test_size=0.2, random_state=0)
 #Neural Network
-NN = skflow.TensorFlowDNNRegressor(hidden_units=[2], steps=10000, learning_rate=0.1)
+NN = skflow.TensorFlowDNNRegressor(hidden_units=[2], steps=100000)
 #Fit the training data
 NN.fit(x_train, y_train)
 #Calculates training error
 pred = NN.predict(x_train)
-pred = np.reshape(pred, -1)
+#pred = np.reshape(pred, -1)
 mse_train = mean_squared_error(y_train, pred)
 #Calculates testing error
 pred = NN.predict(x_test)
-pred = np.reshape(pred, -1)
+#pred = np.reshape(pred, -1)
 mse_test = mean_squared_error(y_test, pred)
 
-print("Training mse is: %0.3f" % mse_train)
-print("Testing mse is: %0.3f" % mse_test)
+print("Training mse is: %0.9f" % mse_train)
+print("Testing mse is: %0.9f" % mse_test)
 
 # Enters loop to predict inputs from user.
 print("\nEnter exit to leave loop.")
