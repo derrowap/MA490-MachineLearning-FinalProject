@@ -47,8 +47,8 @@ X_train, X_test, y_train, y_test = cross_validation.train_test_split(batchInput,
 
 # Build 2 layer fully connected DNN with 10, 10 units respectively.
 # regressor = skflow.TensorFlowEstimator.restore('/home/sanderkd/Data/adderSkFlow')
-# regressor = skflow.TensorFlowDNNRegressor(hidden_units=[4, 9], steps=1000000, learning_rate=0.1)
-regressor = skflow.TensorFlowLinearRegression()
+regressor = skflow.TensorFlowDNNRegressor(hidden_units=[4, 9], steps=1000000, learning_rate=0.1)
+# regressor = skflow.TensorFlowLinearRegression()
 
 # Fit
 start = time.clock()

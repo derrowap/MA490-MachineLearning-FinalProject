@@ -14,7 +14,7 @@ from tensorflow.contrib import skflow
 
 from trainingFunctions import determinant
 
-def worker(units, out_q, batchInput, batchTarget):
+def worker(units, out_q, unit_1, batchInput, batchTarget):
     """worker function"""
     X_train, X_test, y_train, y_test = cross_validation.train_test_split(batchInput, batchTarget,
     test_size=0.1, random_state=42)
@@ -25,10 +25,11 @@ def worker(units, out_q, batchInput, batchTarget):
 
     score = metrics.mean_squared_error(regressor.predict(X_test), y_test)
 
+    unit_1.put(units[1])
     out_q.put(score)
 
-    print('%d done' % units[0]);
-    return;
+    print('[%d, %d] done' % (units[0], units[1]))
+    return
 
 examples = 20
 possibilities = np.zeros(examples)
@@ -104,26 +105,36 @@ for h in range(examples):
 
 
 if __name__ == '__main__':
+
+    n_procs = 30
+    unit_1 = multiprocessing.Queue();
     out_q = multiprocessing.Queue();
-    n_procs = 100
-    procs = []
-    for i in range(n_procs):
-        p = multiprocessing.Process(
-            target=worker,
-            args=([(i+1)], out_q, batchInput, batchTarget))
-        procs.append(p)
-        p.start()
 
-    # Collect all results into a single array
-    final_out = np.zeros(n_procs)
-    final_i = np.zeros(n_procs)
-    for i in range(n_procs):
-        final_out[i] = out_q.get()
-        final_i[i] = i+1
+    def runAll(first_layer):
+        procs = []
+        for j in range(n_procs):
+            p = multiprocessing.Process(
+                target=worker,
+                args=([((first_layer+1)*100), ((j+1)*100)], out_q, unit_1, batchInput, batchTarget))
+            procs.append(p)
+            p.start()
 
-    # Wait for all worker processes to finish
-    for p in procs:
-        p.join()
+        # Wait for all worker processes to finish
+        for p in procs:
+            p.join()
 
-    np.savetxt('/home/sanderkd/Data/determinant_1_layer_by_1.csv', (final_i, final_out), delimiter=', ')
+        return
+
+    for i in range(22, n_procs):
+        runAll(i)
+
+        # Collect all results into a single array
+        final_out = np.zeros(n_procs)
+        final_1 = np.zeros(n_procs)
+        for j in range(n_procs):
+            final_out[j] = out_q.get()
+            final_1[j] = unit_1.get()
+        np.savetxt('/home/sanderkd/Data/determinant_'+str((i+1)*100)+'_layer_by_100.csv', (final_1, final_out), delimiter=', ')
+
+    
     print('finished')
