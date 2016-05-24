@@ -1,6 +1,6 @@
 # Author: Austin Derrow-Pinion
-# Purpose: Train a Neural Network to mimic the funcitonality of multiplying
-#	two numbers together.
+# Purpose: Train a Neural Network to mimic the funcitonality of the evenParity
+#	function.
 #
 # ============================================================================
 

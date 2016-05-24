@@ -118,13 +118,13 @@ def sine(x):
 	return math.sin(x)
 
 def expansionTerms(x):
-	output = np.zeros(10)
+	output = np.zeros(9, dtype='float32')
 	n = 1
-	for i in range(10):
+	for i in range(9):
 		if i % 2 == 0:
-			output[i] = (x ** n) / math.factorial(n)
+			output[i] = float((x ** n) / math.factorial(n))
 		else:
-			output[i] = -(x ** n) / math.factorial(n)
+			output[i] = float(-(x ** n) / math.factorial(n))
 		n += 2
 	return output
 
