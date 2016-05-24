@@ -19,16 +19,16 @@ def worker(units, out_q, unit_1, batchInput, batchTarget):
     X_train, X_test, y_train, y_test = cross_validation.train_test_split(batchInput, batchTarget,
     test_size=0.1, random_state=42)
 
-    regressor = skflow.TensorFlowDNNRegressor(hidden_units=units, steps=100000, learning_rate=0.1)
+    regressor = skflow.TensorFlowDNNRegressor(hidden_units=units, steps=10000, learning_rate=0.1)
 
     regressor.fit(X_train, y_train)
 
     score = metrics.mean_squared_error(regressor.predict(X_test), y_test)
 
-    unit_1.put(units[1])
+    unit_1.put(units[0])
     out_q.put(score)
 
-    print('[%d, %d] done' % (units[0], units[1]))
+    print('[%d] done' % units[0])
     return
 
 examples = 20
@@ -104,37 +104,29 @@ for h in range(examples):
 #     print("actual: %f" % determinant([[val1, val2], [val3, val4]]))
 
 
-if __name__ == '__main__':
 
-    n_procs = 30
-    unit_1 = multiprocessing.Queue();
-    out_q = multiprocessing.Queue();
+n_procs = 30
+final_out = np.zeros(n_procs)
+final_1 = np.zeros(n_procs)
 
-    def runAll(first_layer):
-        procs = []
-        for j in range(n_procs):
-            p = multiprocessing.Process(
-                target=worker,
-                args=([((first_layer+1)*100), ((j+1)*100)], out_q, unit_1, batchInput, batchTarget))
-            procs.append(p)
-            p.start()
+X_train, X_test, y_train, y_test = cross_validation.train_test_split(batchInput, batchTarget,
+test_size=0.1, random_state=42)
 
-        # Wait for all worker processes to finish
-        for p in procs:
-            p.join()
+procs = []
+for j in range(n_procs):
+    units = [(j+1) *100]
 
-        return
+    regressor = skflow.TensorFlowDNNRegressor(hidden_units=units, steps=10000, learning_rate=0.1)
 
-    for i in range(22, n_procs):
-        runAll(i)
+    regressor.fit(X_train, y_train)
 
-        # Collect all results into a single array
-        final_out = np.zeros(n_procs)
-        final_1 = np.zeros(n_procs)
-        for j in range(n_procs):
-            final_out[j] = out_q.get()
-            final_1[j] = unit_1.get()
-        np.savetxt('/home/sanderkd/Data/determinant_'+str((i+1)*100)+'_layer_by_100.csv', (final_1, final_out), delimiter=', ')
+    score = metrics.mean_squared_error(regressor.predict(X_test), y_test)
 
-    
-    print('finished')
+    final_out[j]=units[0]
+    final_1[j]=score
+
+
+np.savetxt('/home/sanderkd/Data/determinant_layer_by_100.csv', (final_1, final_out), delimiter=', ')
+
+
+print('finished')
