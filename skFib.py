@@ -8,12 +8,15 @@ import numpy as np
 from tensorflow.contrib.learn import TensorFlowDNNRegressor
 from trainingFunctions import fib
 from sklearn.metrics import accuracy_score
+from sklearn.preprocessing import normalize
 
 x = np.zeros(70)
-y = np.zeros(70)
+y = np.zeros(70, dtype='int64')
 for i in range(70):
 	x[i] = i + 1
 	y[i] = fib(i + 1)
+
+x = normalize(x, norm='max')
 
 numSteps = 10000
 NN = TensorFlowDNNRegressor(hidden_units=[100, 100, 100], steps=numSteps)
@@ -29,7 +32,7 @@ print("\nEnter exit to leave loop.")
 while True:
 	first = input("Number 1... ")
 	try:
-		first = int(first)
+		first = int(first) / 70
 	except:
 		break
 	result = NN.predict(np.array([first]))

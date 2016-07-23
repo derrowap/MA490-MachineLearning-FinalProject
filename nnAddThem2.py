@@ -18,65 +18,82 @@
 
 import numpy as np
 import pandas as pd
-from tensorflow.contrib.learn import TensorFlowDNNRegressor
+from tensorflow.contrib import skflow
 from sklearn.metrics import accuracy_score
 from sklearn.cross_validation import train_test_split
-import threading
+# import threading
+from trainingFunctions import addThem
 
-class myThread(threading.Thread):
-	def __init__(self, size):
-		threading.Thread.__init__(self)
-		self.size = size
-		self.x = np.zeros((size, 2))
-		self.y = np.zeros(size)
-	def run(self):
-		for i in range(self.size):
-			a = float(np.random.randint(1, 500))
-			b = float(np.random.randint(1, 500))
-			self.x[i] = [a, b]
-			self.y[i] = addThem(a, b)
+# class myThread(threading.Thread):
+# 	def __init__(self, size):
+# 		threading.Thread.__init__(self)
+# 		self.size = size
+# 		self.x = np.zeros((size, 2))
+# 		self.y = np.zeros(size)
+# 	def run(self):
+# 		for i in range(self.size):
+# 			a = float(np.random.randint(1, 500))
+# 			b = float(np.random.randint(1, 500))
+# 			self.x[i] = [a, b]
+# 			self.y[i] = addThem(a, b)
 
-# Create new threads
-thread1 = myThread(1000000)
-thread2 = myThread(1000000)
+def train(ID):
 
-# Start new Threads
-thread1.start()
-thread2.start()
+	# # Create new threads
+	# thread1 = myThread(1000000)
+	# thread2 = myThread(1000000)
 
-# Wait for threads to complete
-thread1.join()
-thread2.join()
+	# # Start new Threads
+	# thread1.start()
+	# thread2.start()
 
-# Combine two threads output together
-input_ = thread1.x + thread2.x
-target = thread1.y + thread2.y
+	# # Wait for threads to complete
+	# thread1.join()
+	# thread2.join()
 
-x_train, x_test, y_train, y_test = train_test_split(input_, target,
-	test_size=0.2, random_state=0)
+	# # Combine two threads output together
+	# input_ = thread1.x + thread2.x
+	# target = thread1.y + thread2.y
 
-# Neural Network from skflow
-NN = TensorFlowDNNRegressor(hidden_units=[2], steps=10000,
-	learning_rate=0.1)
+	size = 1000000
+	x = np.zeros((size, 2))
+	y = np.zeros(size)
+	for i in range(size):
+		a = float(np.random.randint(1, 500))
+		b = float(np.random.randint(1, 500))
+		x[i] = [a, b]
+		y[i] = addThem(a, b)
 
-# Train the NN with training data
-NN.fit(x_train, y_train)
+	x_train, x_test, y_train, y_test = train_test_split(x, y,
+		test_size=0.2, random_state=0)
 
-# Calculates training error
-pred = NN.predict(x_train)
-pred = np.reshape(pred, -1)
-pred = np.rint(pred)
-error_train = 1 - accuracy_score(y_train, pred)
+	# Neural Network from skflow
+	try:
+		NN = skflow.TensorFlowEstimator.restore('/home/derrowap/models/addThem'+str(ID))
+	except:
+		NN = skflow.TensorFlowDNNRegressor(hidden_units=[2], steps=5000)
 
-# Calculates testing error
-pred = NN.predict(x_test)
-pred = np.reshape(pred, -1)
-pred = np.rint(pred)
-error_test = 1 - accuracy_score(y_test, pred)
+	# Train the NN with training data
+	NN.fit(x_train, y_train)
 
-print('\nTraining error = %0.3f    testing error = %0.3f'
-	% (error_train, error_test))
+	# Calculates training error
+	# pred = NN.predict(x_train)
+	# pred = np.reshape(pred, -1)
+	# pred = np.rint(pred)
+	# error_train = 1 - accuracy_score(y_train, pred)
 
+	# Calculates testing error
+	pred = NN.predict(x_test)
+	pred = np.reshape(pred, -1)
+	pred = np.rint(pred)
+	error_test = 1 - accuracy_score(y_test, pred)
+
+	NN.save('/home/derrowap/models/addThem'+str(ID))
+	return(error_test)
+
+# NN = train(-1)
+
+NN = skflow.TensorFlowEstimator.restore('/home/derrowap/models/addThem1')
 # Enters loop to predict inputs from user.
 print("\nEnter exit to leave loop.")
 while True:
